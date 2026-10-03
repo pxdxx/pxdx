@@ -1,0 +1,447 @@
+/* ===================== TOKENS ===================== */
+:root{
+  --bg: #000000;
+  --bg-elev: #0c0404;
+  --bg-card: rgba(20, 6, 6, 0.55);
+  --red: #ff0000;
+  --red-mid: #ff001f;
+  --red-deep: #4c0909;
+  --red-dim: #2d0000;
+  --border: rgba(255, 32, 32, 0.16);
+  --border-soft: rgba(255, 32, 32, 0.09);
+  --text: #f3eeee;
+  --text-dim: #b79494;
+  --text-faint: #8a6b6b;
+  --radius: 20px;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+h1,h2,h3{ font-family: var(--font-display); margin: 0; }
+p{ margin: 0 0 1em; color: var(--text-dim); }
+a{ color: inherit; text-decoration: none; }
+img{ max-width: 100%; display: block; }
+.wrap{ max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* fixed Predictive-Arc WebGL background, injected by bg-arc.js */
+#bgArc{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  pointer-events: none;
+  /* Dim the arcs against the equally-black body behind them, rather than
+     touching the shader — a straightforward global darken. */
+  opacity: 0.38;
+}
+body::before{
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,0,0,0.08), transparent 60%);
+}
+
+/* ===================== HEADER ===================== */
+.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: rgba(5, 2, 2, 0.72);
+  border-bottom: 1px solid var(--border-soft);
+}
+.header-inner{
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+}
+.brand{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.brand-dot{ color: var(--red); }
+.nav{ display: flex; gap: 28px; margin-left: 8px; flex: 1; }
+.nav-link{
+  font-size: 14px;
+  color: var(--text-faint);
+  transition: color .2s ease;
+  position: relative;
+  padding: 4px 0;
+}
+.nav-link:hover, .nav-link.active{ color: var(--text); }
+.nav-link.active::after{
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 2px;
+  background: var(--red);
+  border-radius: 2px;
+}
+.lang-toggle{
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.lang-btn{
+  padding: 6px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-faint);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: color .2s ease, background .2s ease;
+}
+.lang-btn:hover{ color: var(--text); }
+.lang-btn.active{
+  color: #fff;
+  background: linear-gradient(135deg, var(--red) 0%, #9c0000 100%);
+}
+.nav-toggle{
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: 0;
+  padding: 8px;
+  cursor: pointer;
+}
+.nav-toggle span{ width: 20px; height: 2px; background: var(--text); border-radius: 2px; }
+
+/* ===================== BUTTONS ===================== */
+.btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  white-space: nowrap;
+}
+.btn:hover{ transform: translateY(-1px); }
+.btn-primary{
+  background: linear-gradient(135deg, var(--red) 0%, #9c0000 100%);
+  color: #fff;
+  box-shadow: 0 8px 24px -8px rgba(255,0,0,0.55);
+}
+.btn-primary:hover{ box-shadow: 0 10px 28px -6px rgba(255,0,0,0.7); }
+.btn-ghost{
+  background: rgba(255,255,255,0.02);
+  border-color: var(--border);
+  color: var(--text);
+}
+.btn-ghost:hover{ border-color: rgba(255,32,32,0.4); background: rgba(255,0,0,0.06); }
+.btn-sm{ padding: 8px 16px; font-size: 13px; }
+.btn-icon-svg{ width: 16px; height: 16px; }
+.btn-icon{ width: 18px; height: 18px; display: inline-block; }
+
+/* ===================== LOTTIE ICONS ===================== */
+.lottie-icon{
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  vertical-align: middle;
+  border-radius: 8px;
+  background: rgba(255,0,0,0.08);
+  opacity: 0;
+  transition: opacity .35s ease, background .35s ease;
+}
+.lottie-icon.is-loaded{ opacity: 1; background: transparent; }
+.lottie-icon svg{ overflow: visible; }
+
+.section-icon{ width: 1.3em; height: 1.3em; margin-right: 10px; }
+.project-icon{ width: 28px; height: 28px; }
+.contact-icon{ width: 30px; height: 30px; flex-shrink: 0; }
+.contact-icon-svg{ fill: var(--red); }
+
+/* ===================== HERO ===================== */
+.hero{ position: relative; padding: 72px 0 40px; overflow: hidden; }
+.hero-bg{
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 30%;
+  opacity: 0.22;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 85%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 85%);
+  z-index: 0;
+}
+.hero-grid{
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  align-items: center;
+  min-height: 56vh;
+}
+.overline{
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red-mid);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.hero-title{
+  font-size: clamp(48px, 8vw, 88px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 10%, var(--red-mid) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+.hero-lead{
+  font-size: 17px;
+  max-width: 480px;
+  color: var(--text-dim);
+}
+.hero-actions{ display: flex; gap: 14px; flex-wrap: wrap; margin: 24px 0 18px; }
+.hero-meta{ font-size: 13px; color: var(--text-faint); margin: 0; }
+
+.hero-visual{ position: relative; height: 420px; }
+.saturn-frame{
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  /* No overflow:hidden here — the neon-border glow (appended as this
+     element's last child) needs to bleed outward like it does on every
+     other card. Containing the planet/ring happens one level down, on
+     .saturn-stage, so it doesn't clip the border's own glow. */
+  background: rgba(10, 3, 3, 0.82);
+}
+.saturn-stage{
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-width: 120px;
+  min-height: 120px;
+  border-radius: calc(var(--radius) - 8px);
+  overflow: hidden;
+}
+
+/* ===================== SECTIONS ===================== */
+.section{ padding: 72px 0; scroll-margin-top: 80px; }
+.section-title{
+  display: flex;
+  align-items: center;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+/* ===================== REVEAL ===================== */
+.reveal{ opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in-view{ opacity: 1; transform: translateY(0); }
+
+/* ===================== CARD / NEON BORDER ===================== */
+.card{
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 28px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+[data-neon-border]{ isolation: isolate; }
+
+.about-tags{ display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.tag{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255,0,0,0.07);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.tag .lottie-icon{ width: 18px; height: 18px; }
+
+/* ===================== STACK ===================== */
+.stack-grid{ display: flex; flex-wrap: wrap; gap: 10px; }
+.stack-pill{
+  padding: 9px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-soft);
+  font-size: 13px;
+  color: var(--text-dim);
+  transition: border-color .2s ease, color .2s ease;
+}
+.stack-pill:hover{ border-color: rgba(255,32,32,0.45); color: var(--text); }
+
+/* ===================== PROJECTS ===================== */
+.projects-grid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.project-card{
+  display: flex;
+  flex-direction: column;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.project-card:hover{ transform: translateY(-3px); }
+.project-top{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.project-stars{ font-size: 12px; color: var(--text-faint); }
+.project-name{ font-size: 19px; margin-bottom: 8px; }
+.project-desc{ font-size: 14px; margin-bottom: 14px; flex: 1; }
+.project-stack{
+  font-size: 12px;
+  color: var(--red-mid);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+/* ===================== CONTACT ===================== */
+.contact-card{ display: flex; flex-direction: column; gap: 4px; padding: 10px; }
+.contact-row{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  transition: background .2s ease;
+}
+.contact-row:hover{ background: rgba(255,0,0,0.07); }
+.contact-text{ display: flex; flex-direction: column; gap: 2px; }
+.contact-text b{ font-size: 15px; }
+.contact-text small{ color: var(--text-faint); font-size: 13px; }
+
+/* ===================== CONTACTS — stop the arc background here ===================== */
+/* #bgArc is position:fixed and keeps rendering its red arcs behind every
+   section. Rather than trying to fade it away right before the footer (a
+   moving target depending on scroll), we simply stop showing it starting
+   at the Contacts section: its own background goes from transparent (the
+   arcs still show through at its very top, same as Projects above it) to
+   fully opaque var(--bg) within the first ~300px. From that point on —
+   through the rest of Contacts, the gap, and the footer's own black top —
+   everything is flat solid black already, so there's nothing left to
+   transition into the footer. */
+#contact{
+  position: relative;
+  background: linear-gradient(to bottom,
+    transparent 0,
+    rgba(0,0,0,0.35) 90px,
+    rgba(0,0,0,0.7) 180px,
+    var(--bg) 300px);
+}
+
+/* ===================== FOOTER — Beyond Horizon ===================== */
+.site-footer{
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+}
+/* The WebGL canvas's own top edge is never quite zero-brightness (ambient
+   haze from the horizon glow reaches that high), so butting it straight
+   against the fully-black page above still reads as a hard line — a flat
+   rectangle edge is exactly what the eye latches onto. This re-introduces
+   the canvas gradually instead of revealing it all at once. */
+.site-footer::before{
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 320px;
+  background: linear-gradient(to bottom,
+    #000 0%,
+    rgba(0,0,0,0.9) 25%,
+    rgba(0,0,0,0.65) 50%,
+    rgba(0,0,0,0.35) 75%,
+    transparent 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+.footer-overlay{
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px 64px;
+  pointer-events: none;
+}
+.footer-overlay a{ pointer-events: auto; }
+.footer-contacts{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+.footer-contacts a{
+  color: var(--text);
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s ease, color .2s ease;
+}
+.footer-contacts a:hover{ color: var(--red-mid); border-color: var(--red-mid); }
+.footer-sep{ color: var(--text-faint); }
+.footer-copy{ font-size: 12px; color: var(--text-faint); margin: 0; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 860px){
+  .hero-grid{ grid-template-columns: 1fr; min-height: auto; }
+  .hero-visual{ height: 280px; order: -1; }
+  .projects-grid{ grid-template-columns: 1fr; }
+  .nav{
+    position: absolute;
+    top: 64px; left: 0; right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(5,2,2,0.96);
+    border-bottom: 1px solid var(--border-soft);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease;
+  }
+  .nav.open{ max-height: 260px; }
+  .nav-link{ padding: 14px 24px; }
+  .nav-toggle{ display: flex; margin-left: auto; }
+}
+@media (max-width: 520px){
+  .hero{ padding: 48px 0 24px; }
+  .section{ padding: 48px 0; }
+  .btn{ width: 100%; justify-content: center; }
+  .hero-actions{ flex-direction: column; }
+}
