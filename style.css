@@ -18,7 +18,7 @@
 }
 
 *, *::before, *::after{ box-sizing: border-box; }
-html{ scroll-behavior: smooth; }
+html{ scroll-behavior: smooth; overflow-x: hidden; }
 body{
   margin: 0;
   background: var(--bg);
@@ -437,11 +437,18 @@ body::before{
   }
   .nav.open{ max-height: 260px; }
   .nav-link{ padding: 14px 24px; }
-  .nav-toggle{ display: flex; margin-left: auto; }
+  /* nav is position:absolute here (out of flex flow), so lang-toggle's
+     own margin-left:auto is what pushes both it and the hamburger to the
+     right edge together — giving nav-toggle a second auto margin would
+     split the free space and strand lang-toggle in the middle. */
+  .nav-toggle{ display: flex; }
 }
 @media (max-width: 520px){
   .hero{ padding: 48px 0 24px; }
   .section{ padding: 48px 0; }
   .btn{ width: 100%; justify-content: center; }
   .hero-actions{ flex-direction: column; }
+  .header-inner{ gap: 14px; }
+  .lang-btn{ padding: 6px 11px; }
+  .footer-contacts{ font-size: 14px; gap: 8px; }
 }
