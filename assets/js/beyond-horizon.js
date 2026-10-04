@@ -6,9 +6,17 @@
   (background #000000, core #000000, mid #FF001F, deep #FF0000).
 */
 (function () {
-  const MAX_DPR = 2;
-  const RENDER_SCALE = 0.6;
-  const PIXEL_BUDGET = 2200000;
+  // This raymarched shader (26 steps x 4-octave noise, per pixel) is by far
+  // the heaviest thing on the page — fine on a desktop GPU, but on a phone
+  // it's the difference between "footer looks nice" and "scrolling here
+  // makes the whole page stutter." Cut both the step count and the pixel
+  // budget on small/touch screens.
+  const IS_LITE = (typeof matchMedia === 'function') &&
+    (matchMedia('(max-width: 760px)').matches || matchMedia('(pointer: coarse)').matches);
+  const MAX_DPR = IS_LITE ? 1.5 : 2;
+  const RENDER_SCALE = IS_LITE ? 0.42 : 0.6;
+  const PIXEL_BUDGET = IS_LITE ? 650000 : 2200000;
+  const STEPS = IS_LITE ? 14 : 26;
   const REF_ASPECT = 1314 / 2860;
 
   const VERT = `
@@ -42,7 +50,7 @@
     uniform vec3  uMid;
     uniform vec3  uDeep;
 
-    const int STEPS = 26;
+    const int STEPS = ${STEPS};
     const float REF_ASPECT = ${REF_ASPECT.toFixed(6)};
 
     float hash31(vec3 p) {

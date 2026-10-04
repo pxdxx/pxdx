@@ -452,3 +452,15 @@ body::before{
   .lang-btn{ padding: 6px 11px; }
   .footer-contacts{ font-size: 14px; gap: 8px; }
 }
+/* backdrop-filter recomputes every frame the content behind it moves (i.e.
+   constantly, under the sticky header, on every scroll tick) and is one of
+   the more GPU-expensive CSS effects going on mobile browsers in particular.
+   Drop it on touch/narrow devices — the header still has its own solid-ish
+   background color underneath, so it stays legible without the blur. */
+@media (max-width: 760px), (pointer: coarse){
+  .site-header, .card{
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .site-header{ background: rgba(5, 2, 2, 0.94); }
+}

@@ -16,11 +16,20 @@
     speed: 16,
   };
 
-  const GLOW_LAYERS = [
-    { blur: 8, opacity: 0.5, reach: 0.3 },
-    { blur: 15, opacity: 0.3, reach: 0.6 },
-    { blur: 57, opacity: 0.18, reach: 1 },
-  ];
+  // blur() is a heavy filter to repaint every frame while animating, and
+  // there are up to five of these boxes on screen; trim it down on
+  // touch/narrow devices rather than running the full desktop glow stack.
+  const IS_LITE = (typeof matchMedia === 'function') &&
+    (matchMedia('(max-width: 760px)').matches || matchMedia('(pointer: coarse)').matches);
+  const GLOW_LAYERS = IS_LITE
+    ? [
+      { blur: 10, opacity: 0.35, reach: 0.5 },
+    ]
+    : [
+      { blur: 8, opacity: 0.5, reach: 0.3 },
+      { blur: 15, opacity: 0.3, reach: 0.6 },
+      { blur: 57, opacity: 0.18, reach: 1 },
+    ];
   const MAX_GLOW_BLUR = Math.max(...GLOW_LAYERS.map((l) => l.blur));
   const MAX_GLOW_REACH = 36;
   const ARC_SAMPLES = 24;
@@ -188,6 +197,9 @@
     }
 
     let lap = 0, corner = 0, stepT = 0, last = performance.now();
+    let raf = 0;
+    let running = false;
+
     function frame(now) {
       const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
       last = now;
@@ -212,9 +224,33 @@
         groupA.style.setProperty('--arc', buildArc(lap, cfg.borderSize, size.w, size.h, cfg.color));
         groupB.style.setProperty('--arc', buildArc(lap + 0.5, cfg.borderSize, size.w, size.h, cfg.color));
       }
-      requestAnimationFrame(frame);
+      raf = requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+
+    function start() {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+    function stop() {
+      running = false;
+      cancelAnimationFrame(raf);
+    }
+
+    // Every mounted instance was animating forever, off-screen or not —
+    // five infinite per-frame trig+string-building loops running at once
+    // is the main reason the page feels overloaded (and only gets worse
+    // once the footer's own heavy WebGL joins in). Pause whichever cards
+    // aren't currently visible instead.
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
+      }, { rootMargin: '200px 0px' });
+      io.observe(host);
+    } else {
+      start();
+    }
   }
 
   function boot() {

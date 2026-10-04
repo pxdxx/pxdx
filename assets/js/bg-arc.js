@@ -6,7 +6,9 @@
   the component's own preset resolved through its default-merging logic.
 */
 (function () {
-  const MAX_DPR = 2;
+  const IS_LITE = (typeof matchMedia === 'function') &&
+    (matchMedia('(max-width: 760px)').matches || matchMedia('(pointer: coarse)').matches);
+  const MAX_DPR = IS_LITE ? 1.5 : 2;
   const PTR_RATE = 6.0;
 
   const VERT_SRC = `
@@ -183,9 +185,36 @@
       gl.uniform3f(u('uHigh'), CFG.high[0], CFG.high[1], CFG.high[2]);
 
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      raf = requestAnimationFrame(render);
+      if (running) raf = requestAnimationFrame(render);
     }
-    raf = requestAnimationFrame(render);
+
+    // This shader runs full-screen, every frame, forever by default — the
+    // single most expensive thing on the page if left unchecked. Past the
+    // Contacts section its own CSS background already paints over it
+    // completely (see #contact's gradient in style.css), so there is
+    // nothing to gain by still computing it there or in the footer; pause
+    // it once scrolled that far, and also while the tab/app is backgrounded.
+    let running = false;
+    function setRunning(next) {
+      if (next === running) return;
+      running = next;
+      if (running) { last = performance.now(); raf = requestAnimationFrame(render); }
+      else cancelAnimationFrame(raf);
+    }
+
+    const contactEl = document.getElementById('contact');
+    function checkScroll() {
+      if (document.hidden) { setRunning(false); return; }
+      if (!contactEl) { setRunning(true); return; }
+      setRunning(contactEl.getBoundingClientRect().top > -300);
+    }
+    let scrollRaf = 0;
+    window.addEventListener('scroll', () => {
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(() => { checkScroll(); scrollRaf = 0; });
+    }, { passive: true });
+    document.addEventListener('visibilitychange', checkScroll);
+    checkScroll();
   }
 
   if (document.readyState === 'loading') {

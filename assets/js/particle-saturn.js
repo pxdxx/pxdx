@@ -10,6 +10,10 @@
     return;
   }
 
+  const IS_LITE = (typeof matchMedia === 'function') &&
+    (matchMedia('(max-width: 760px)').matches || matchMedia('(pointer: coarse)').matches);
+  const MAX_DPR = IS_LITE ? 1.5 : 2;
+
   const PERSPECTIVE = 0.15;
   const VIEW_SPAN = 6.4;
   const CORE_RADIUS = 1;
@@ -21,7 +25,7 @@
   const DEFAULTS = {
     coreColor: '#99000B',
     ringColor: '#83030C',
-    density: 20,
+    density: 10,
     particleSize: 14,
     glow: 20,
     tilt: 20,
@@ -230,8 +234,8 @@
 
       const S = settingsFor(cfg);
 
-      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      this.renderer = new THREE.WebGLRenderer({ antialias: !IS_LITE, alpha: true });
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       this.renderer.setPixelRatio(dpr);
       this.renderer.outputColorSpace = THREE.SRGBColorSpace;
       this.renderer.setClearColor(0x000000, 0);
