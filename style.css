@@ -368,6 +368,12 @@ body::before{
 .site-footer{
   position: relative;
   min-height: 70vh;
+  /* Mobile browsers size `vh` against the viewport with its toolbar
+     hidden, even while that toolbar is actually showing — so 70vh can be
+     taller than what's really on screen, leaving the flex-end content
+     looking like it floats with dead space below it instead of sitting
+     near the bottom. `dvh` tracks the real, current viewport. */
+  min-height: 70dvh;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -451,6 +457,8 @@ body::before{
   .header-inner{ gap: 14px; }
   .lang-btn{ padding: 6px 11px; }
   .footer-contacts{ font-size: 14px; gap: 8px; }
+  .site-footer{ min-height: 52vh; min-height: 52dvh; }
+  .footer-overlay{ padding-bottom: 36px; }
 }
 /* backdrop-filter recomputes every frame the content behind it moves (i.e.
    constantly, under the sticky header, on every scroll tick) and is one of
